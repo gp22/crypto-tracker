@@ -1,0 +1,30 @@
+{
+  "name": "crypto-tracker",
+  "version": "1.0.0",
+  "description": "Track crypto currency prices",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "export NODE_ENV=test && mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'"
+  },
+  "engines": {
+    "node": "6.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gp22/crypto-tracker.git"
+  },
+  "author": "Paul Garcia",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "mongodb": "^2.2.27",
+    "mongoose": "^4.10.3"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.3.0"
+  }
+}
