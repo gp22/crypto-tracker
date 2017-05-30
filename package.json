@@ -20,7 +20,8 @@
   "dependencies": {
     "express": "^4.15.3",
     "mongodb": "^2.2.27",
-    "mongoose": "^4.10.3"
+    "mongoose": "^4.10.3",
+    "poloniex-api-node": "^1.1.1"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
