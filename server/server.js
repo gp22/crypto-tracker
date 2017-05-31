@@ -2,16 +2,12 @@ require('./config/config');
 const path = require('path');
 const express = require('express');
 const { mongoose } = require('./db/mongoose');
-const Poloniex = require('poloniex-api-node');
+// const Poloniex = require('poloniex-api-node');
 
-/*
-Trading pairs on Poloniex:
-http://www.cryptocoincharts.info/markets/show/poloniex
-*/
 // const POLONIEX_API_KEY = process.env.POLONIEX_API_KEY;
 // const POLONIEX_API_SECRET = process.env.POLONIEX_API_SECRET;
 // const poloniex = new Poloniex(POLONIEX_API_KEY, POLONIEX_API_SECRET);
-const poloniex = new Poloniex();
+// const poloniex = new Poloniex();
 const app = express();
 const PORT = process.env.PORT;
 
@@ -28,14 +24,6 @@ const query = require('./routes/query');
 // app.use(index);
 app.use(query);
 // app.use(def);
-
-// poloniex.returnCurrencies((err, res) => {
-//   if (err) {
-//     console.error(err);
-//     return;
-//   }
-//     console.log(res);
-// });
 
 // Start the server and listen on PORT.
 app.listen(PORT, () => {

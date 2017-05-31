@@ -18,10 +18,12 @@
   "author": "Paul Garcia",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.1",
     "express": "^4.15.3",
     "mongodb": "^2.2.27",
     "mongoose": "^4.10.3",
-    "poloniex-api-node": "^1.1.1"
+    "poloniex-api-node": "^1.1.1",
+    "validator": "^7.0.0"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
