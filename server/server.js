@@ -16,12 +16,12 @@ const distDir = path.join(__dirname, '../dist');
 app.use(express.static(distDir));
 
 // Import routes
-// const index = require('./routes/index');
+const index = require('./routes/index');
 const query = require('./routes/query');
 // const def = require('./routes/default');
 
 // Setup express to use routes
-// app.use(index);
+app.use(index);
 app.use(query);
 // app.use(def);
 
