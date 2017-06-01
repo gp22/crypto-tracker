@@ -1,5 +1,6 @@
 import { QueryService } from '../shared/services/query.service';
 import { Component, OnInit } from '@angular/core';
+import Chart from 'chart.js';
 import 'rxjs/Rx';
 
 @Component({

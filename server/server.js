@@ -2,6 +2,8 @@ require('./config/config');
 const path = require('path');
 const express = require('express');
 const { mongoose } = require('./db/mongoose');
+const { Chart } = require('./models/chart');
+
 // const Poloniex = require('poloniex-api-node');
 
 // const POLONIEX_API_KEY = process.env.POLONIEX_API_KEY;
@@ -24,6 +26,16 @@ const query = require('./routes/query');
 app.use(index);
 app.use(query);
 // app.use(def);
+
+// Create a new chart
+// Chart.findOne({}).then((foundChart) => {
+//   if (!foundChart) {
+//     const chart = new Chart();
+//     return chart.save().then((newChart) => {
+//       console.log(newChart);
+//     });
+//   }
+// });
 
 // Start the server and listen on PORT.
 app.listen(PORT, () => {
