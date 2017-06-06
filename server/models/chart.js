@@ -1,4 +1,3 @@
-const { CurrencyPair } = require('./currencyPair');
 const mongoose = require('mongoose');
 
 const ChartSchema = new mongoose.Schema({

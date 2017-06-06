@@ -1,7 +1,5 @@
 /*
-QUERY Route
-Query string format (start needs to be a valid UNIX timestamp):
-/api/?currency1=BTC&currency2=USDT&start=1488184924
+CURRENCY Routes
 Trading pairs on Poloniex (values for currency1 and currency2):
 http://www.cryptocoincharts.info/markets/show/poloniex
 */
@@ -17,16 +15,6 @@ const router = express.Router();
 const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 router.use(bodyParser.json());
-
-/*
-get /api
-query the db and return the chart object
-
-post /api
-argument: currency pair
-
-delete /api
-*/
 
 // Route to get current chart data
 router.get('/api', (req, res) => {
@@ -66,21 +54,15 @@ router.post('/api/currency', (req, res) => {
         startDate: Number(start),
         data: poloniexData.data,
       };
+      const newCurrencyPair = new CurrencyPair(currencyPairData);
 
-      // Query the db to see if currency pair already exists
-      CurrencyPair.findOne({ currencyPair: `${currency1}_${currency2}` })
-        .then((foundCurrencyPair) => {
-          if (foundCurrencyPair) {
-            return res.status(400).send('Currency pair already exists in db');
-          }
-          const newCurrencyPair = new CurrencyPair(currencyPairData);
-
-          newCurrencyPair.save().then((savedCurrencyPair) => {
-            foundChart.addCurrencyPair(savedCurrencyPair).then(() => {
-              res.status(200).send(savedCurrencyPair);
-            });
-          });
+      newCurrencyPair.save().then((savedCurrencyPair) => {
+        foundChart.addCurrencyPair(savedCurrencyPair).then(() => {
+          res.status(200).send(savedCurrencyPair);
         });
+      }).catch((error) => {
+        res.status(400).send(error.errmsg);
+      });
     }).catch((error) => {
       res.status(400).send(error);
     });

@@ -4,7 +4,7 @@ const CurrencyPairSchema = new mongoose.Schema({
   currencyPair: {
     type: String,
     required: true,
-    uniqe: true,
+    unique: true,
   },
   startDate: {
     type: Number,
