@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 
 const CurrencyPairSchema = new mongoose.Schema({
-  pair: {
+  currencyPair: {
     type: String,
     required: true,
     uniqe: true,
+  },
+  startDate: {
+    type: Number,
+    required: true,
+    unique: false,
   },
   data: [{
     type: Object,

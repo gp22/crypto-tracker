@@ -7,13 +7,16 @@ http://www.cryptocoincharts.info/markets/show/poloniex
 */
 // const { CurrencyPair } = require('./../models/currencyPair');
 const { Chart } = require('./../models/chart');
+const { CurrencyPair } = require('./../models/currencyPair');
+const bodyParser = require('body-parser');
 const validator = require('validator');
 const express = require('express');
 const axios = require('axios');
 
 const router = express.Router();
-
 const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+router.use(bodyParser.json());
 
 /*
 get /api
@@ -45,9 +48,9 @@ router.get('/api', (req, res) => {
 });
 
 // Route to add currency pair to db
-router.post('/api/currencies', (req, res) => {
-  const { currency1, currency2, start } = req.query;
-  const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency2}_${currency1}&start=${start}&end=9999999999&period=86400`;
+router.post('/api/currency', (req, res) => {
+  const { currency1, currency2, start } = req.body;
+  const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency1}_${currency2}&start=${start}&end=9999999999&period=86400`;
 
   if (!validator.isWhitelisted(currency1, upper) ||
       !validator.isWhitelisted(currency2, upper) ||
@@ -59,13 +62,21 @@ router.post('/api/currencies', (req, res) => {
   Chart.findOne({}).then((foundChart) => {
     axios.get(poloniexUrl).then((poloniexData) => {
       const newCurrencyPair = {
-        currency1,
-        currency2,
+        currencyPair: `${currency1}_${currency2}`,
+        startDate: Number(start),
         data: poloniexData.data,
       };
-      console.log(newCurrencyPair);
 
-      res.status(200).send();
+      // Query the db to see if currency pair already exists
+      CurrencyPair.findOne({ currencyPair: `${currency1}_${currency2}` })
+        .then((foundCurrencyPair) => {
+          if (foundCurrencyPair) {
+            return res.status(400).send('Currency pair already exists');
+          }
+          foundChart.addCurrencyPair(newCurrencyPair).then(() => {
+            res.status(200).send(newCurrencyPair);
+          });
+        });
     }).catch((e) => {
       res.status(400).send(e);
     });
