@@ -28,14 +28,14 @@ app.use(query);
 // app.use(def);
 
 // Create a new chart
-// Chart.findOne({}).then((foundChart) => {
-//   if (!foundChart) {
-//     const chart = new Chart();
-//     return chart.save().then((newChart) => {
-//       console.log(newChart);
-//     });
-//   }
-// });
+Chart.findOne({}).then((foundChart) => {
+  if (!foundChart) {
+    const chart = new Chart();
+    return chart.save().then((newChart) => {
+      console.log(newChart);
+    });
+  }
+});
 
 // Start the server and listen on PORT.
 app.listen(PORT, () => {

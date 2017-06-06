@@ -9,12 +9,11 @@ const CurrencyPairSchema = new mongoose.Schema({
   startDate: {
     type: Number,
     required: true,
-    unique: false,
   },
-  data: [{
-    type: Object,
-    uniqe: false,
-  }],
+  data: {
+    type: Array,
+    required: true,
+  },
 });
 
 const CurrencyPair = mongoose.model('CurrencyPair', CurrencyPairSchema);

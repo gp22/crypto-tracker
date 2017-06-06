@@ -1,3 +1,4 @@
+const { CurrencyPair } = require('./currencyPair');
 const mongoose = require('mongoose');
 
 const ChartSchema = new mongoose.Schema({
@@ -17,8 +18,8 @@ const ChartSchema = new mongoose.Schema({
   }],
 });
 
-ChartSchema.methods.addCurrencyPair = function (currencyPair) {
-  this.currencyPairs.push(currencyPair);
+ChartSchema.methods.addCurrencyPair = function (newCurrencyPair) {
+  this.currencyPairs.push(newCurrencyPair);
   return this.save();
 };
 

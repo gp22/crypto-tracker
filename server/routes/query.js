@@ -61,7 +61,7 @@ router.post('/api/currency', (req, res) => {
   // Query db to get the chart we'll be adding the currency pair to
   Chart.findOne({}).then((foundChart) => {
     axios.get(poloniexUrl).then((poloniexData) => {
-      const newCurrencyPair = {
+      const currencyPairData = {
         currencyPair: `${currency1}_${currency2}`,
         startDate: Number(start),
         data: poloniexData.data,
@@ -71,14 +71,18 @@ router.post('/api/currency', (req, res) => {
       CurrencyPair.findOne({ currencyPair: `${currency1}_${currency2}` })
         .then((foundCurrencyPair) => {
           if (foundCurrencyPair) {
-            return res.status(400).send('Currency pair already exists');
+            return res.status(400).send('Currency pair already exists in db');
           }
-          foundChart.addCurrencyPair(newCurrencyPair).then(() => {
-            res.status(200).send(newCurrencyPair);
+          const newCurrencyPair = new CurrencyPair(currencyPairData);
+
+          newCurrencyPair.save().then((savedCurrencyPair) => {
+            foundChart.addCurrencyPair(savedCurrencyPair).then(() => {
+              res.status(200).send(savedCurrencyPair);
+            });
           });
         });
-    }).catch((e) => {
-      res.status(400).send(e);
+    }).catch((error) => {
+      res.status(400).send(error);
     });
   });
 });
