@@ -4,17 +4,16 @@ const CurrencyPairSchema = new mongoose.Schema({
   currencyPair: {
     type: String,
     required: true,
-    uniqe: true,
+    unique: true,
   },
   startDate: {
     type: Number,
     required: true,
-    unique: false,
   },
-  data: [{
-    type: Object,
-    uniqe: false,
-  }],
+  data: {
+    type: Array,
+    required: true,
+  },
 });
 
 const CurrencyPair = mongoose.model('CurrencyPair', CurrencyPairSchema);
