@@ -1,7 +1,10 @@
 const { CurrencyPair } = require('./../models/currencyPair');
+const { clearCurrencyPairs } = require('./seed/seed');
 const { app } = require('./../server');
 const request = require('supertest');
 const expect = require('expect');
+
+before(clearCurrencyPairs);
 
 /*
 Verify that we get a homepage
@@ -20,7 +23,7 @@ Verify that we can add a currency pair to the db
 */
 describe('POST /api/currency', function () {
   // Disable this when testing with MLAB db
-  this.timeout(3000);
+  this.timeout(4000);
 
   it('should create a new currency pair', (done) => {
     const currency1 = 'USDT';
@@ -69,9 +72,9 @@ describe('POST /api/currency', function () {
   });
 
   it('should not create a currency pair with invalid data', (done) => {
-    const currency1 = '';
+    const currency1 = 'USDT';
     const currency2 = 'BTC';
-    const start = '1495874524';
+    const start = '';
 
     request(app)
       .post('/api/currency')
