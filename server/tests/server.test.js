@@ -23,7 +23,7 @@ Verify that we can add a currency pair to the db
 */
 describe('POST /api/currency', function () {
   // Disable this when testing with MLAB db
-  this.timeout(4000);
+  this.timeout(5000);
 
   it('should create a new currency pair', (done) => {
     const currency1 = 'USDT';
@@ -89,6 +89,60 @@ describe('POST /api/currency', function () {
           expect(currencyPairs.length).toBe(1);
           done();
         }).catch(error => done(error));
+      });
+  });
+});
+
+describe('DELETE /api/currency', () => {
+  it('should delete an existing currency pair', (done) => {
+    const currency1 = 'USDT';
+    const currency2 = 'BTC';
+
+    request(app)
+      .delete('/api/currency')
+      .send({ currency1, currency2 })
+      .expect(200)
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+
+        CurrencyPair.find().then((currencyPairs) => {
+          expect(currencyPairs.length).toBe(0);
+          done();
+        }).catch(error => done(error));
+      });
+  });
+
+  it('should return 404 if currency pair not found', (done) => {
+    const currency1 = 'USDT';
+    const currency2 = 'BTC';
+
+    request(app)
+      .delete('/api/currency')
+      .send({ currency1, currency2 })
+      .expect(404)
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+
+  it('should return 400 if invalid data supplied', (done) => {
+    const currency1 = 'a';
+    const currency2 = '';
+
+    request(app)
+      .delete('/api/currency')
+      .send({ currency1, currency2 })
+      .expect(400)
+      .end((err) => {
+        if (err) {
+          return done(err);
+        }
+        done();
       });
   });
 });

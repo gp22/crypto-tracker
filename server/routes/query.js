@@ -71,4 +71,26 @@ router.post('/api/currency', (req, res) => {
   });
 });
 
+// Route to delete currency pair from db
+router.delete('/api/currency', (req, res) => {
+  const { currency1, currency2 } = req.body;
+
+  if (!validator.isWhitelisted(currency1, upper) ||
+      validator.isEmpty(currency1) ||
+      !validator.isWhitelisted(currency2, upper) ||
+      validator.isEmpty(currency2)) {
+    return res.status(400).send();
+  }
+
+  CurrencyPair.findOneAndRemove({ currencyPair: `${currency1}_${currency2}` })
+    .then((removedCurrencyPair) => {
+      if (!removedCurrencyPair) {
+        return res.status(404).send(`Error: ${currency1}_${currency2} not in db`);
+      }
+      res.status(200).json(removedCurrencyPair.currencyPair);
+    }).catch((error) => {
+      res.status(400).send(error);
+    });
+});
+
 module.exports = router;
