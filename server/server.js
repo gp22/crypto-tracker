@@ -20,11 +20,13 @@ app.use(express.static(distDir));
 // Import routes
 const index = require('./routes/index');
 const query = require('./routes/query');
+const chart = require('./routes/chart');
 // const def = require('./routes/default');
 
 // Setup express to use routes
 app.use(index);
 app.use(query);
+app.use(chart);
 // app.use(def);
 
 // Create a new chart
