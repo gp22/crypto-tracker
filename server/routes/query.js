@@ -49,8 +49,8 @@ router.post('/api/currency', (req, res) => {
       }).catch((error) => {
         res.status(400).send(error.errmsg);
       });
-    }).catch((error) => {
-      res.status(400).send(error);
+    }).catch(() => {
+      res.status(400).json('There was a problem getting chart data');
     });
   });
 });
