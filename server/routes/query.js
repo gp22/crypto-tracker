@@ -76,9 +76,14 @@ router.delete('/api/currency', (req, res) => {
   CurrencyPair.findOneAndRemove({ currencyPair })
     .then((removedCurrencyPair) => {
       if (!removedCurrencyPair) {
-        return res.status(404).send(`Error: ${currencyPair} not in db`);
+        return res.status(404).send();
       }
-      res.status(200).json();
+
+      Chart.findOne({})
+        .then((foundChart) => {
+          foundChart.removeCurrencyPair(removedCurrencyPair)
+            .then(() => res.status(200).send());
+        });
     })
     .catch(error => res.status(400).send(error));
 });
