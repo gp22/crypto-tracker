@@ -1,5 +1,6 @@
 require('./config/config');
 const path = require('path');
+const moment = require('moment');
 const express = require('express');
 const { mongoose } = require('./db/mongoose');
 const { Chart } = require('./models/chart');
@@ -32,10 +33,12 @@ app.use(chart);
 // Create a new chart
 Chart.findOne({}).then((foundChart) => {
   if (!foundChart) {
-    const chart = new Chart();
-    return chart.save().then((newChart) => {
-      console.log(newChart);
-    });
+    const startDate = moment().subtract(7, 'days').format('X');
+    const newChart = new Chart({ startDate });
+
+    newChart.save()
+      .then(() => console.log('New chart successfully created'))
+      .catch(error => console.log(`There was a problem creating chart: ${Object.keys(error.errors)}`));
   }
 });
 
