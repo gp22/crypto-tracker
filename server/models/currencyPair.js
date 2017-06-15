@@ -30,9 +30,7 @@ CurrencyPairSchema.methods.modifyDateRange = function (newStartDate) {
         data: updatedData,
       });
     })
-    .catch(() => {
-      return Promise.reject('There was a problem getting chart data');
-    });
+    .catch(() => Promise.reject('There was a problem getting chart data'));
 };
 
 const CurrencyPair = mongoose.model('CurrencyPair', CurrencyPairSchema);

@@ -2,43 +2,45 @@
 CHART Routes
 */
 const { CurrencyPair } = require('./../models/currencyPair');
-const { Chart } = require('./../models/chart');
 const bodyParser = require('body-parser');
 const validator = require('validator');
 const express = require('express');
-const axios = require('axios');
 
 const router = express.Router();
-const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 router.use(bodyParser.json());
 
 router.patch('/api/chart', (req, res) => {
-  const { start } = req.body;
-  const allCurrencyPairUpdates = [];
+  const { newStartDate } = req.body;
+  const currencyUpdates = [];
+
+  if (!newStartDate) {
+    return res.status(400).send();
+  }
+
+  if (!validator.isNumeric(newStartDate)) {
+    return res.status(400).send();
+  }
 
   CurrencyPair.find({})
     .then((foundCurrencyPairs) => {
       foundCurrencyPairs.forEach((currencyPair) => {
-        allCurrencyPairUpdates.push(new Promise((resolve) => {
-          return currencyPair.modifyDateRange(start)
-            .then(() => {
-              resolve();
-            })
-            .catch((error) => {
-              return res.status(400).json(error);
-            });
+        currencyUpdates.push(new Promise((resolve, reject) => {
+          currencyPair.modifyDateRange(newStartDate)
+            .then(() => resolve())
+            .catch(error => reject(error));
         }));
       });
 
-      Promise.all(allCurrencyPairUpdates)
+      Promise.all(currencyUpdates)
         .then(() => {
           res.status(200).send();
+        })
+        .catch((error) => {
+          res.status(500).json(error);
         });
     })
-    .catch(() => {
-      res.status(400).json('Internal server error');
-    });
+    .catch(() => res.status(500).send());
 });
 
 module.exports = router;
