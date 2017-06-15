@@ -17,29 +17,30 @@ router.use(bodyParser.json());
 
 // Route to add currency pair to db
 router.post('/api/currency', (req, res) => {
-  const { currency1, currency2, start } = req.body;
-  const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency1}_${currency2}&start=${start}&end=9999999999&period=86400`;
+  const { currency1, currency2 } = req.body;
 
-  if (!currency1 || !currency2 || !start) {
+  if (!currency1 || !currency2) {
     return res.status(400).send();
   }
 
   if (!validator.isWhitelisted(currency1, upper) ||
       validator.isEmpty(currency1) ||
       !validator.isWhitelisted(currency2, upper) ||
-      validator.isEmpty(currency2) ||
-      !validator.isNumeric(start)) {
+      validator.isEmpty(currency2)) {
     return res.status(400).send();
   }
 
   // Query db to get the chart we'll be adding the currency pair to
   Chart.findOne({})
     .then((foundChart) => {
+      const { startDate } = foundChart;
+      const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency1}_${currency2}&start=${startDate}&end=9999999999&period=86400`;
+
       axios.get(poloniexUrl)
         .then((poloniexData) => {
           const currencyPairData = {
             currencyPair: `${currency1}_${currency2}`,
-            startDate: Number(start),
+            startDate,
             data: poloniexData.data,
           };
           const newCurrencyPair = new CurrencyPair(currencyPairData);

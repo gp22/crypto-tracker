@@ -7,10 +7,6 @@ const CurrencyPairSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  startDate: {
-    type: Number,
-    required: true,
-  },
   data: {
     type: Array,
     required: true,
