@@ -28,11 +28,10 @@ describe('POST /api/currency', function () {
   it('should create a new currency pair', (done) => {
     const currency1 = 'USDT';
     const currency2 = 'BTC';
-    const start = '1495874524';
 
     request(app)
       .post('/api/currency')
-      .send({ currency1, currency2, start })
+      .send({ currency1, currency2 })
       .expect(200)
       .expect((res) => {
         expect(res.body.currencyPair).toExist();
@@ -53,11 +52,10 @@ describe('POST /api/currency', function () {
   it('should not create a duplicate currency pair', (done) => {
     const currency1 = 'USDT';
     const currency2 = 'BTC';
-    const start = '1495874524';
 
     request(app)
       .post('/api/currency')
-      .send({ currency1, currency2, start })
+      .send({ currency1, currency2 })
       .expect(400)
       .end((err) => {
         if (err) {
@@ -74,11 +72,10 @@ describe('POST /api/currency', function () {
   it('should not create a currency pair with invalid data', (done) => {
     const currency1 = 'USDT';
     const currency2 = 'BTC';
-    const start = '';
 
     request(app)
       .post('/api/currency')
-      .send({ currency1, currency2, start })
+      .send({ currency1, currency2 })
       .expect(400)
       .end((err) => {
         if (err) {
