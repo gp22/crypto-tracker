@@ -90,6 +90,37 @@ describe('POST /api/currency', function () {
   });
 });
 
+/*
+Verify that we can update the date range of currency pairs
+*/
+describe('PATCH /api/chart', () => {
+  it('should update currency pairs', (done) => {
+    const newStartDate = '1496301965';
+
+    request(app)
+      .patch('/api/chart')
+      .send({ newStartDate })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.currencyPair).toExist();
+        expect(res.body.currencyPair).toBe(`${currency1}_${currency2}`);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        CurrencyPair.findById(res.body._id).then((foundCurrencyPair) => {
+          expect(foundCurrencyPair.data.length).toBe(`${currency1}_${currency2}`);
+          done();
+        }).catch(error => done(error));
+      });
+  });
+});
+
+/*
+Verify that we can delete currency pairs from the db
+*/
 describe('DELETE /api/currency', () => {
   it('should delete an existing currency pair', (done) => {
     const currency1 = 'USDT';
