@@ -15,14 +15,14 @@ const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 router.use(bodyParser.json());
 
-// Route to get current chart
-router.get('/api', (req, res) => {
-});
-
 // Route to add currency pair to db
 router.post('/api/currency', (req, res) => {
   const { currency1, currency2, start } = req.body;
   const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency1}_${currency2}&start=${start}&end=9999999999&period=86400`;
+
+  if (!currency1 || !currency2 || !start) {
+    return res.status(400).send();
+  }
 
   if (!validator.isWhitelisted(currency1, upper) ||
       validator.isEmpty(currency1) ||
@@ -33,31 +33,37 @@ router.post('/api/currency', (req, res) => {
   }
 
   // Query db to get the chart we'll be adding the currency pair to
-  Chart.findOne({}).then((foundChart) => {
-    axios.get(poloniexUrl).then((poloniexData) => {
-      const currencyPairData = {
-        currencyPair: `${currency1}_${currency2}`,
-        startDate: Number(start),
-        data: poloniexData.data,
-      };
-      const newCurrencyPair = new CurrencyPair(currencyPairData);
+  Chart.findOne({})
+    .then((foundChart) => {
+      axios.get(poloniexUrl)
+        .then((poloniexData) => {
+          const currencyPairData = {
+            currencyPair: `${currency1}_${currency2}`,
+            startDate: Number(start),
+            data: poloniexData.data,
+          };
+          const newCurrencyPair = new CurrencyPair(currencyPairData);
 
-      newCurrencyPair.save().then((savedCurrencyPair) => {
-        foundChart.addCurrencyPair(savedCurrencyPair).then(() => {
-          res.status(200).send(savedCurrencyPair);
-        });
-      }).catch((error) => {
-        res.status(400).send(error.errmsg);
-      });
-    }).catch(() => {
-      res.status(400).json('There was a problem getting chart data');
-    });
-  });
+          newCurrencyPair.save()
+            .then((savedCurrencyPair) => {
+              foundChart.addCurrencyPair(savedCurrencyPair)
+                .then(() => res.status(200).send(savedCurrencyPair));
+            })
+            .catch(error => res.status(400).send(error.errmsg));
+        })
+        .catch(() => res.status(500).json('There was a problem getting chart data'));
+    })
+    .catch(() => res.status(500).send());
 });
 
 // Route to delete currency pair from db
 router.delete('/api/currency', (req, res) => {
   const { currency1, currency2 } = req.body;
+  const currencyPair = `${currency1}_${currency2}`;
+
+  if (!currency1 || !currency2) {
+    return res.status(400).send();
+  }
 
   if (!validator.isWhitelisted(currency1, upper) ||
       validator.isEmpty(currency1) ||
@@ -66,15 +72,14 @@ router.delete('/api/currency', (req, res) => {
     return res.status(400).send();
   }
 
-  CurrencyPair.findOneAndRemove({ currencyPair: `${currency1}_${currency2}` })
+  CurrencyPair.findOneAndRemove({ currencyPair })
     .then((removedCurrencyPair) => {
       if (!removedCurrencyPair) {
-        return res.status(404).send(`Error: ${currency1}_${currency2} not in db`);
+        return res.status(404).send(`Error: ${currencyPair} not in db`);
       }
-      res.status(200).json(removedCurrencyPair.currencyPair);
-    }).catch((error) => {
-      res.status(400).send(error);
-    });
+      res.status(200).json();
+    })
+    .catch(error => res.status(400).send(error));
 });
 
 module.exports = router;
