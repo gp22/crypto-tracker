@@ -22,6 +22,11 @@ ChartSchema.methods.addCurrencyPair = function (newCurrencyPair) {
   return this.save();
 };
 
+ChartSchema.methods.removeCurrencyPair = function (currencyPair) {
+  this.currencyPairs.pull(currencyPair);
+  return this.save();
+};
+
 const Chart = mongoose.model('Chart', ChartSchema);
 
 module.exports = { Chart };
