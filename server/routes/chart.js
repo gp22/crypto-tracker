@@ -2,6 +2,7 @@
 CHART Routes
 */
 const { CurrencyPair } = require('./../models/currencyPair');
+const { Chart } = require('./../models/chart');
 const bodyParser = require('body-parser');
 const validator = require('validator');
 const express = require('express');
@@ -34,7 +35,8 @@ router.patch('/api/chart', (req, res) => {
 
       Promise.all(currencyUpdates)
         .then(() => {
-          res.status(200).send();
+          Chart.findOne({})
+            .then(foundChart => res.status(200).send(foundChart));
         })
         .catch((error) => {
           res.status(500).json(error);
