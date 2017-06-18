@@ -43,9 +43,7 @@ router.patch('/api/chart', (req, res) => {
                 .then(() => res.status(200).send(foundChart));
             });
         })
-        .catch(() => {
-          res.status(500).send();
-        });
+        .catch(() => res.status(500).send());
     })
     .catch(() => res.status(500).send());
 });
