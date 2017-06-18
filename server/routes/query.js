@@ -8,7 +8,6 @@ const { Chart } = require('./../models/chart');
 const bodyParser = require('body-parser');
 const validator = require('validator');
 const express = require('express');
-const axios = require('axios');
 
 const router = express.Router();
 const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -18,6 +17,7 @@ router.use(bodyParser.json());
 // Route to add currency pair to db
 router.post('/api/currency', (req, res) => {
   const { currency1, currency2 } = req.body;
+  const currencyPair = `${currency1}_${currency2}`;
 
   if (!currency1 || !currency2) {
     return res.status(400).send();
@@ -34,25 +34,23 @@ router.post('/api/currency', (req, res) => {
   Chart.findOne({})
     .then((foundChart) => {
       const { startDate } = foundChart;
-      const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency1}_${currency2}&start=${startDate}&end=9999999999&period=86400`;
+      const currencyPairData = { currencyPair, startDate, data: [{}] };
+      const newCurrencyPair = new CurrencyPair(currencyPairData);
 
-      axios.get(poloniexUrl)
-        .then((poloniexData) => {
-          const currencyPairData = {
-            currencyPair: `${currency1}_${currency2}`,
-            startDate,
-            data: poloniexData.data,
-          };
-          const newCurrencyPair = new CurrencyPair(currencyPairData);
-
-          newCurrencyPair.save()
-            .then((savedCurrencyPair) => {
-              foundChart.addCurrencyPair(savedCurrencyPair)
-                .then(() => res.status(200).send(savedCurrencyPair));
+      newCurrencyPair.save()
+        .then((savedCurrencyPair) => {
+          savedCurrencyPair.getChartData(startDate)
+            .then(() => {
+              CurrencyPair.findOne({ currencyPair })
+                .then((finalCurrencyPair) => {
+                  foundChart.addCurrencyPair(finalCurrencyPair)
+                    .then(() => res.status(200).send(finalCurrencyPair))
+                    .catch(() => res.status(500).send());
+                });
             })
-            .catch(error => res.status(400).send(error.errmsg));
+            .catch(() => res.status(500).send());
         })
-        .catch(() => res.status(500).json('There was a problem getting chart data'));
+        .catch(() => res.status(500).send());
     })
     .catch(() => res.status(500).send());
 });

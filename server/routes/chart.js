@@ -15,11 +15,7 @@ router.patch('/api/chart', (req, res) => {
   const { newStartDate } = req.body;
   const currencyUpdates = [];
 
-  if (!newStartDate) {
-    return res.status(400).send();
-  }
-
-  if (!validator.isNumeric(newStartDate)) {
+  if (!newStartDate || !validator.isNumeric(newStartDate)) {
     return res.status(400).send();
   }
 
@@ -40,6 +36,7 @@ router.patch('/api/chart', (req, res) => {
       Promise.all(currencyUpdates)
         .then(() => {
           Chart.findOne({})
+            .populate('currencyPairs')
             .then(foundChart => res.status(200).send(foundChart));
         })
         .catch(() => {

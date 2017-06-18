@@ -13,6 +13,19 @@ const CurrencyPairSchema = new mongoose.Schema({
   },
 });
 
+CurrencyPairSchema.methods.getChartData = function (startDate) {
+  const currency1 = this.currencyPair.split('_')[0];
+  const currency2 = this.currencyPair.split('_')[1];
+  const poloniexUrl = `https://poloniex.com/public?command=returnChartData&currencyPair=${currency1}_${currency2}&start=${startDate}&end=9999999999&period=86400`;
+
+  return axios.get(poloniexUrl)
+    .then((poloniexData) => {
+      const { data } = poloniexData;
+
+      return this.update({ data });
+    });
+};
+
 CurrencyPairSchema.methods.modifyDateRange = function (newStartDate) {
   const currency1 = this.currencyPair.split('_')[0];
   const currency2 = this.currencyPair.split('_')[1];
@@ -20,11 +33,9 @@ CurrencyPairSchema.methods.modifyDateRange = function (newStartDate) {
 
   return axios.get(poloniexUrl)
     .then((poloniexData) => {
-      const updatedData = poloniexData.data;
+      const { data } = poloniexData;
 
-      return this.update({
-        data: updatedData,
-      });
+      return this.update({ data });
     });
 };
 
