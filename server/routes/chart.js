@@ -11,6 +11,7 @@ const router = express.Router();
 
 router.use(bodyParser.json());
 
+// Route to update the date range of the chart
 router.patch('/api/chart', (req, res) => {
   const { newStartDate } = req.body;
   const currencyUpdates = [];
@@ -37,7 +38,10 @@ router.patch('/api/chart', (req, res) => {
         .then(() => {
           Chart.findOne({})
             .populate('currencyPairs')
-            .then(foundChart => res.status(200).send(foundChart));
+            .then((foundChart) => {
+              foundChart.updateDateRange(newStartDate)
+                .then(() => res.status(200).send(foundChart));
+            });
         })
         .catch(() => {
           res.status(500).send();
