@@ -6,14 +6,9 @@ const ChartSchema = new mongoose.Schema({
     required: true,
   },
   currencyPairs: [{
-    currencyPair: {
-      type: String,
-      required: true,
-    },
-    data: {
-      type: Array,
-      required: true,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CurrencyPair',
+    required: true,
   }],
 });
 
