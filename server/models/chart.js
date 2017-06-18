@@ -22,6 +22,11 @@ ChartSchema.methods.removeCurrencyPair = function (currencyPair) {
   return this.save();
 };
 
+ChartSchema.methods.updateDateRange = function (newStartDate) {
+  const startDate = newStartDate;
+  return this.update({ startDate });
+};
+
 const Chart = mongoose.model('Chart', ChartSchema);
 
 module.exports = { Chart };
