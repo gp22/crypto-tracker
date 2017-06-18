@@ -50,7 +50,7 @@ router.post('/api/currency', (req, res) => {
             })
             .catch(() => res.status(500).send());
         })
-        .catch(() => res.status(500).send());
+        .catch(error => res.status(400).json(error.errmsg));
     })
     .catch(() => res.status(500).send());
 });

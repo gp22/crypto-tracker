@@ -70,8 +70,8 @@ describe('POST /api/currency', function () {
   });
 
   it('should not create a currency pair with invalid data', (done) => {
-    const currency1 = 'USDT';
-    const currency2 = 'BTC';
+    const currency1 = '';
+    const currency2 = '';
 
     request(app)
       .post('/api/currency')
@@ -133,7 +133,7 @@ describe('PATCH /api/chart', () => {
 });
 
 /*
-Verify that we can delete currency pairs from the db
+Verify that we can delete a currency pair
 */
 describe('DELETE /api/currency', () => {
   it('should delete an existing currency pair', (done) => {
