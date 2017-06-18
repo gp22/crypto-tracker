@@ -91,6 +91,48 @@ describe('POST /api/currency', function () {
 });
 
 /*
+Verify that we can update the date range of currency pairs
+*/
+describe('PATCH /api/chart', () => {
+  it('should update start date of currency pairs', (done) => {
+    const newStartDate = '1496301965';
+
+    request(app)
+      .patch('/api/chart')
+      .send({ newStartDate })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.currencyPairs).toExist();
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        CurrencyPair.findById(res.body.currencyPairs[0]._id).then((foundCurrencyPair) => {
+          expect(foundCurrencyPair.data).toExist();
+          done();
+        }).catch(error => done(error));
+      });
+  });
+
+  it('should not update start date with invalid date supplied', (done) => {
+    const newStartDate = 'asf';
+
+    request(app)
+      .patch('/api/chart')
+      .send({ newStartDate })
+      .expect(400)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        done();
+      });
+  });
+});
+
+/*
 Verify that we can delete a currency pair
 */
 describe('DELETE /api/currency', () => {
