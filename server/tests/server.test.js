@@ -94,7 +94,7 @@ describe('POST /api/currency', function () {
 Verify that we can update the date range of currency pairs
 */
 describe('PATCH /api/chart', () => {
-  it('should update currency pairs', (done) => {
+  it('should update start date of currency pairs', (done) => {
     const newStartDate = '1496301965';
 
     request(app)
@@ -102,18 +102,32 @@ describe('PATCH /api/chart', () => {
       .send({ newStartDate })
       .expect(200)
       .expect((res) => {
-        expect(res.body.currencyPair).toExist();
-        expect(res.body.currencyPair).toBe(`${currency1}_${currency2}`);
+        expect(res.body.currencyPairs).toExist();
       })
       .end((err, res) => {
         if (err) {
           return done(err);
         }
 
-        CurrencyPair.findById(res.body._id).then((foundCurrencyPair) => {
-          expect(foundCurrencyPair.data.length).toBe(`${currency1}_${currency2}`);
+        CurrencyPair.findById(res.body.currencyPairs[0]._id).then((foundCurrencyPair) => {
+          expect(foundCurrencyPair.data).toExist();
           done();
         }).catch(error => done(error));
+      });
+  });
+
+  it('should not update start date with invalid date supplied', (done) => {
+    const newStartDate = 'asf';
+
+    request(app)
+      .patch('/api/chart')
+      .send({ newStartDate })
+      .expect(400)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        done();
       });
   });
 });
