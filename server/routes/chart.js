@@ -2,6 +2,7 @@
 CHART Routes
 */
 const { CurrencyPair } = require('./../models/currencyPair');
+const { Chart } = require('./../models/chart');
 const bodyParser = require('body-parser');
 const validator = require('validator');
 const express = require('express');
@@ -10,20 +11,21 @@ const router = express.Router();
 
 router.use(bodyParser.json());
 
+// Route to update the date range of the chart
 router.patch('/api/chart', (req, res) => {
   const { newStartDate } = req.body;
   const currencyUpdates = [];
 
-  if (!newStartDate) {
-    return res.status(400).send();
-  }
-
-  if (!validator.isNumeric(newStartDate)) {
+  if (!newStartDate || !validator.isNumeric(newStartDate)) {
     return res.status(400).send();
   }
 
   CurrencyPair.find({})
     .then((foundCurrencyPairs) => {
+      if (foundCurrencyPairs.length === 0) {
+        return res.status(404).send();
+      }
+
       foundCurrencyPairs.forEach((currencyPair) => {
         currencyUpdates.push(new Promise((resolve, reject) => {
           currencyPair.modifyDateRange(newStartDate)
@@ -34,11 +36,14 @@ router.patch('/api/chart', (req, res) => {
 
       Promise.all(currencyUpdates)
         .then(() => {
-          res.status(200).send();
+          Chart.findOne({})
+            .populate('currencyPairs')
+            .then((foundChart) => {
+              foundChart.updateDateRange(newStartDate)
+                .then(() => res.status(200).send(foundChart));
+            });
         })
-        .catch((error) => {
-          res.status(500).json(error);
-        });
+        .catch(() => res.status(500).send());
     })
     .catch(() => res.status(500).send());
 });
