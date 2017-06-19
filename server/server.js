@@ -41,7 +41,11 @@ Chart.findOne({}).then((foundChart) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('new user connected');
+  Chart.findOne({})
+    .populate('currencyPairs')
+    .then((foundChart) => {
+      socket.emit('newChart', foundChart);
+    });
 });
 
 // Start the server and listen on PORT.

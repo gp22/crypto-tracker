@@ -16,8 +16,8 @@ export class ChartComponent implements OnInit {
   constructor(private queryService: QueryService) { }
 
   ngOnInit() {
-    this.socket.on('connect', () => {
-      console.log('connected to server');
+    this.socket.on('newChart', (chartData) => {
+      console.log(chartData);
     });
   }
 
