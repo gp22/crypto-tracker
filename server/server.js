@@ -1,18 +1,16 @@
 require('./config/config');
 const path = require('path');
+const http = require('http');
 const moment = require('moment');
 const express = require('express');
+const socket = require('socket.io');
 const { mongoose } = require('./db/mongoose');
 const { Chart } = require('./models/chart');
 
-// const Poloniex = require('poloniex-api-node');
-
-// const POLONIEX_API_KEY = process.env.POLONIEX_API_KEY;
-// const POLONIEX_API_SECRET = process.env.POLONIEX_API_SECRET;
-// const poloniex = new Poloniex(POLONIEX_API_KEY, POLONIEX_API_SECRET);
-// const poloniex = new Poloniex();
 const app = express();
 const PORT = process.env.PORT;
+const server = http.createServer(app);
+const io = socket(server);
 
 // Create link to Angular build directory
 const distDir = path.join(__dirname, '../dist');
@@ -42,8 +40,12 @@ Chart.findOne({}).then((foundChart) => {
   }
 });
 
+io.on('connection', (socket) => {
+  console.log('new user connected');
+});
+
 // Start the server and listen on PORT.
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}.`);
 });
 

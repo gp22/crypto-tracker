@@ -1,5 +1,6 @@
 import { QueryService } from '../shared/services/query.service';
 import { Component, OnInit } from '@angular/core';
+import * as io from 'socket.io-client';
 import Chart from 'chart.js';
 import 'rxjs/Rx';
 
@@ -10,14 +11,14 @@ import 'rxjs/Rx';
   providers: [QueryService]
 })
 export class ChartComponent implements OnInit {
+  private socket = io();
 
   constructor(private queryService: QueryService) { }
 
   ngOnInit() {
-    this.queryService.getCurrencyData('BTC', 'USDT', 1488184924)
-      .subscribe((stats) => {
-        console.log(stats);
-      })
+    this.socket.on('connect', () => {
+      console.log('connected to server');
+    });
   }
 
 }
