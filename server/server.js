@@ -1,18 +1,17 @@
 require('./config/config');
 const path = require('path');
+const http = require('http');
 const moment = require('moment');
 const express = require('express');
-const { mongoose } = require('./db/mongoose');
+const socketIO = require('socket.io');
 const { Chart } = require('./models/chart');
+const { CurrencyPair } = require('./models/currencyPair');
+const { mongoose } = require('./db/mongoose');
 
-// const Poloniex = require('poloniex-api-node');
-
-// const POLONIEX_API_KEY = process.env.POLONIEX_API_KEY;
-// const POLONIEX_API_SECRET = process.env.POLONIEX_API_SECRET;
-// const poloniex = new Poloniex(POLONIEX_API_KEY, POLONIEX_API_SECRET);
-// const poloniex = new Poloniex();
 const app = express();
 const PORT = process.env.PORT;
+const server = http.createServer(app);
+const io = socketIO(server);
 
 // Create link to Angular build directory
 const distDir = path.join(__dirname, '../dist');
@@ -42,8 +41,38 @@ Chart.findOne({}).then((foundChart) => {
   }
 });
 
+// Setup handlers for socket events
+io.on('connection', (socket) => {
+  Chart.findOne({})
+    .populate('currencyPairs')
+    .then((foundChart) => {
+      socket.emit('newChart', foundChart);
+    });
+
+  socket.on('addCurrency', (receivedCurrencyPair) => {
+    const { currencyPair } = receivedCurrencyPair;
+
+    CurrencyPair.findOne({ currencyPair })
+      .then((foundCurrencyPair) => {
+        socket.broadcast.emit('addCurrency', foundCurrencyPair);
+      });
+  });
+
+  socket.on('deleteCurrency', (currencyPairToDelete) => {
+    socket.broadcast.emit('deleteCurrency', currencyPairToDelete);
+  });
+
+  socket.on('updateDateRange', () => {
+    Chart.findOne({})
+      .populate('currencyPairs')
+      .then((foundChart) => {
+        socket.broadcast.emit('updateDateRange', foundChart);
+      });
+  });
+});
+
 // Start the server and listen on PORT.
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}.`);
 });
 
