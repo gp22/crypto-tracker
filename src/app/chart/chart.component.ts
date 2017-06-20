@@ -15,10 +15,26 @@ export class ChartComponent implements OnInit {
 
   constructor(private queryService: QueryService) { }
 
+
+  // this.socket.emit('updateDateRange');
+  // this.socket.emit('deleteCurrency', { currencyPair: 'USDT_BTC' });
+  // this.socket.emit('addCurrency', { currencyPair: 'USDT_BTC' });
+
   ngOnInit() {
     this.socket.on('newChart', (chartData) => {
       console.log(chartData);
     });
-  }
 
+    this.socket.on('addCurrency', (newCurrencyPair) => {
+      console.log(newCurrencyPair);
+    });
+
+    this.socket.on('deleteCurrency', (currencyPairToDelete) => {
+      console.log(currencyPairToDelete);
+    });
+
+    this.socket.on('updateDateRange', (updatedChartData) => {
+      console.log(updatedChartData);
+    });
+  }
 }

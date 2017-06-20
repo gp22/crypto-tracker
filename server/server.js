@@ -3,14 +3,15 @@ const path = require('path');
 const http = require('http');
 const moment = require('moment');
 const express = require('express');
-const socket = require('socket.io');
-const { mongoose } = require('./db/mongoose');
+const socketIO = require('socket.io');
 const { Chart } = require('./models/chart');
+const { CurrencyPair } = require('./models/currencyPair');
+const { mongoose } = require('./db/mongoose');
 
 const app = express();
 const PORT = process.env.PORT;
 const server = http.createServer(app);
-const io = socket(server);
+const io = socketIO(server);
 
 // Create link to Angular build directory
 const distDir = path.join(__dirname, '../dist');
@@ -40,12 +41,34 @@ Chart.findOne({}).then((foundChart) => {
   }
 });
 
+// Setup handlers for socket events
 io.on('connection', (socket) => {
   Chart.findOne({})
     .populate('currencyPairs')
     .then((foundChart) => {
       socket.emit('newChart', foundChart);
     });
+
+  socket.on('addCurrency', (receivedCurrencyPair) => {
+    const { currencyPair } = receivedCurrencyPair;
+
+    CurrencyPair.findOne({ currencyPair })
+      .then((foundCurrencyPair) => {
+        socket.broadcast.emit('addCurrency', foundCurrencyPair);
+      });
+  });
+
+  socket.on('deleteCurrency', (currencyPairToDelete) => {
+    socket.broadcast.emit('deleteCurrency', currencyPairToDelete);
+  });
+
+  socket.on('updateDateRange', () => {
+    Chart.findOne({})
+      .populate('currencyPairs')
+      .then((foundChart) => {
+        socket.broadcast.emit('updateDateRange', foundChart);
+      });
+  });
 });
 
 // Start the server and listen on PORT.
