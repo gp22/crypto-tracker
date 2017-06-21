@@ -1,0 +1,22 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  color: $main;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: $main;
+  text-decoration: none;
+
+  &:hover {
+    color: $secondary;
+  }
+}
