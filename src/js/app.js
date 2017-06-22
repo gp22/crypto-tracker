@@ -15,44 +15,48 @@ const options = {
   maintainAspectRatio: false,
 };
 
+function createCurrencyPairDataset(currencyPair) {
+  const data = currencyPair.data.map(currencyData => currencyData.high);
+  const label = currencyPair.currencyPair;
+  const dataSet = {
+    label,
+    data,
+    borderWidth: 1,
+    fill: false,
+  };
+  return dataSet;
+}
+
 socket.on('newChart', (chartData) => {
   labels.length = 0;
   datasets.length = 0;
 
+  // Create the date labels for the chart and push into labels
   chartData.currencyPairs[0].data.forEach((data) => {
     const date = (moment.unix(data.date).format('YYYY.MM.DD'));
     labels.push(date);
   });
 
+  // Popluate chart data for each currencyPair and push into datasets
   chartData.currencyPairs.forEach((currencyPair) => {
-    const label = currencyPair.currencyPair;
-    const data = [];
-    const dataSet = ({
-      label,
-      data,
-      borderWidth: 1,
-      fill: false,
-    });
-
-    currencyPair.data.forEach((currencyData) => {
-      data.push(currencyData.high);
-    });
-
+    const dataSet = createCurrencyPairDataset(currencyPair);
     datasets.push(dataSet);
   });
-  // this.chartData = this.dataService.createChart(chartData);
+
+  // Create the chart
   const cryptoChart = new Chart(ctx, {
     type: 'line',
+    options,
     data: {
       labels,
       datasets,
     },
-    options,
   });
 });
 
 socket.on('addCurrency', (newCurrencyPair) => {
-  // this.dataService.addCurrencyPair(newCurrencyPair);
+  const dataSet = createCurrencyPairDataset(newCurrencyPair);
+  // datasets.push(dataSet);
 });
 
 socket.on('deleteCurrency', (currencyPairToDelete) => {
@@ -62,3 +66,5 @@ socket.on('deleteCurrency', (currencyPairToDelete) => {
 socket.on('updateDateRange', (updatedChartData) => {
   // this.dataService.updateChart(updatedChartData);
 });
+
+socket.emit('addCurrency', { currencyPair: 'USDT_BTC' });
