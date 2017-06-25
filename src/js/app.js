@@ -6,7 +6,7 @@ const io = require('socket.io-client');
 const dataService = require('./dataService');
 
 const socket = io();
-
+const currencyButtons = document.querySelectorAll('.currency-button');
 const ctx = document.getElementById('cryptoChart');
 const labels = [];
 const datasets = [];
@@ -26,6 +26,22 @@ function createCurrencyPairDataset(currencyPair) {
   };
   return dataSet;
 }
+
+function addCurrencyPair(currencyPair) {
+  fetch('/api/currency', currencyPair).then((response) => {
+    console.log(response);
+  });
+}
+
+currencyButtons.forEach((button) => {
+  button.addEventListener('click', function () {
+    const currency1 = 'USDT';
+    const currency2 = this.id.toUpperCase();
+    const currencyPair = { currency1, currency2 };
+
+    addCurrencyPair(currencyPair);
+  });
+});
 
 socket.on('newChart', (chartData) => {
   labels.length = 0;
