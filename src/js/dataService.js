@@ -1,4 +1,5 @@
 const Chart = require('chart.js');
+const moment = require('moment');
 
 const ctx = document.getElementById('cryptoChart');
 const options = {
@@ -26,10 +27,14 @@ function createCurrencyPairDataset(currencyPair) {
   return dataSet;
 }
 
-function addChartData(labels, dataSets) {
-  labels.forEach((label) => {
-    cryptoChart.data.labels.push(label);
-  });
+function addChartData(currencyPair, dataSets) {
+  // Create the date labels for the chart if they don't exist
+  if (cryptoChart.data.labels.length === 0) {
+    currencyPair.data.forEach((data) => {
+      const date = (moment.unix(data.date).format('YYYY.MM.DD'));
+      cryptoChart.data.labels.push(date);
+    });
+  }
 
   dataSets.forEach((dataSet) => {
     cryptoChart.data.datasets.push(dataSet);
@@ -42,16 +47,36 @@ function removeChartData(label, dataSet) {
 
 }
 
-function clearChart(chart) {
+function clearChart() {
   cryptoChart.data.labels.length = 0;
   cryptoChart.data.datasets.length = 0;
   cryptoChart.update();
 }
 
 function addCurrencyPair(currencyPair) {
-  fetch('/api/currency', currencyPair).then((response) => {
-    console.log(response);
-  });
+  const body = JSON.stringify(currencyPair);
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  };
+  const options = {
+    method: 'POST',
+    headers,
+    body,
+  };
+
+  fetch('/api/currency', options)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`Error: ${response.status}`);
+    })
+    .then((responseData) => {
+      const dataSet = createCurrencyPairDataset(responseData);
+      addChartData(responseData, [dataSet]);
+    })
+    .catch(e => e.message);
 }
 
 module.exports = {

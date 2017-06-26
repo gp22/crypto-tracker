@@ -1,6 +1,5 @@
 import '../css/main.scss';
 
-const moment = require('moment');
 const io = require('socket.io-client');
 const dataService = require('./dataService');
 
@@ -18,16 +17,14 @@ currencyButtons.forEach((button) => {
 });
 
 socket.on('newChart', (chartData) => {
-  const labels = [];
+  const firstCurrencyPair = chartData.currencyPairs[0];
   const datasets = [];
 
-  dataService.clearChart();
+  if (chartData.currencyPairs.length === 0) {
+    return;
+  }
 
-  // Create the date labels for the chart and push into labels
-  chartData.currencyPairs[0].data.forEach((data) => {
-    const date = (moment.unix(data.date).format('YYYY.MM.DD'));
-    labels.push(date);
-  });
+  dataService.clearChart();
 
   // Popluate chart data for each currencyPair and push into datasets
   chartData.currencyPairs.forEach((currencyPair) => {
@@ -35,12 +32,12 @@ socket.on('newChart', (chartData) => {
     datasets.push(dataSet);
   });
 
-  dataService.addChartData(labels, datasets);
+  dataService.addChartData(firstCurrencyPair, datasets);
 });
 
 socket.on('addCurrency', (newCurrencyPair) => {
   const dataSet = dataService.createCurrencyPairDataset(newCurrencyPair);
-  // datasets.push(dataSet);
+  dataService.addChartData(null, dataSet);
 });
 
 socket.on('deleteCurrency', (currencyPairToDelete) => {
