@@ -8,12 +8,18 @@ const dataService = require('./dataService');
 const socket = io();
 const currencyButtons = document.querySelectorAll('.currency-button');
 const ctx = document.getElementById('cryptoChart');
-const labels = [];
-const datasets = [];
 const options = {
   responsive: true,
   maintainAspectRatio: false,
 };
+const cryptoChart = new Chart(ctx, {
+  type: 'line',
+  options,
+  data: {
+    labels: [],
+    datasets: [],
+  },
+});
 
 function createCurrencyPairDataset(currencyPair) {
   const data = currencyPair.data.map(currencyData => currencyData.high);
@@ -25,6 +31,28 @@ function createCurrencyPairDataset(currencyPair) {
     fill: false,
   };
   return dataSet;
+}
+
+function addChartData(chart, labels, dataSets) {
+  labels.forEach((label) => {
+    chart.data.labels.push(label);
+  });
+
+  dataSets.forEach((dataSet) => {
+    chart.data.datasets.push(dataSet);
+  });
+
+  chart.update();
+}
+
+function removeChartData(chart, label, dataSet) {
+
+}
+
+function clearChart(chart) {
+  chart.data.labels.length = 0;
+  chart.data.datasets.length = 0;
+  chart.update();
 }
 
 function addCurrencyPair(currencyPair) {
@@ -44,8 +72,10 @@ currencyButtons.forEach((button) => {
 });
 
 socket.on('newChart', (chartData) => {
-  labels.length = 0;
-  datasets.length = 0;
+  const labels = [];
+  const datasets = [];
+
+  clearChart(cryptoChart);
 
   // Create the date labels for the chart and push into labels
   chartData.currencyPairs[0].data.forEach((data) => {
@@ -59,15 +89,7 @@ socket.on('newChart', (chartData) => {
     datasets.push(dataSet);
   });
 
-  // Create the chart
-  const cryptoChart = new Chart(ctx, {
-    type: 'line',
-    options,
-    data: {
-      labels,
-      datasets,
-    },
-  });
+  addChartData(cryptoChart, labels, datasets);
 });
 
 socket.on('addCurrency', (newCurrencyPair) => {
@@ -82,5 +104,3 @@ socket.on('deleteCurrency', (currencyPairToDelete) => {
 socket.on('updateDateRange', (updatedChartData) => {
   // this.dataService.updateChart(updatedChartData);
 });
-
-socket.emit('addCurrency', { currencyPair: 'USDT_BTC' });
