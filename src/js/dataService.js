@@ -44,8 +44,14 @@ function addChartData(currencyPair, dataSets) {
   cryptoChart.update();
 }
 
-function removeChartData(label, dataSet) {
+function removeChartData(currencyPair) {
+  const currencyPairToDelete = `${currencyPair.currency1}_${currencyPair.currency2}`;
+  const index = (cryptoChart.data.datasets.findIndex((dataset) => {
+    return dataset.label === currencyPairToDelete;
+  }));
 
+  cryptoChart.data.datasets.splice(1, 1);
+  cryptoChart.update();
 }
 
 function clearChart() {
@@ -66,10 +72,22 @@ function addCurrencyPair(currencyPair) {
   });
 }
 
+function removeCurrencyPair(currencyPair) {
+  return new Promise((resolve) => {
+    apiService.removeCurrencyFromAPI(currencyPair)
+      .then(() => {
+        removeChartData(currencyPair);
+        resolve();
+      })
+      .catch(e => e.message);
+  });
+}
+
 module.exports = {
   createCurrencyPairDataset,
   addChartData,
   removeChartData,
   clearChart,
   addCurrencyPair,
+  removeCurrencyPair,
 };

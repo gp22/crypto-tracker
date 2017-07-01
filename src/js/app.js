@@ -8,15 +8,25 @@ import '../css/main.scss';
   const currencyButtons = document.querySelectorAll('.currency-button');
 
   currencyButtons.forEach((button) => {
+    button.enabled = false;
     button.addEventListener('click', function () {
       const currency1 = 'USDT';
       const currency2 = this.id.toUpperCase();
       const currencyPair = { currency1, currency2 };
 
-      dataService.addCurrencyPair(currencyPair)
-        .then(() => {
-          socket.emit('addCurrency', currencyPair);
-        });
+      if (!this.enabled) {
+        dataService.addCurrencyPair(currencyPair)
+          .then(() => {
+            socket.emit('addCurrency', currencyPair);
+            this.enabled = true;
+          });
+      } else {
+        dataService.removeCurrencyPair(currencyPair)
+          .then(() => {
+            socket.emit('deleteCurrency', currencyPair);
+            this.enabled = false;
+          });
+      }
     });
   });
 
@@ -41,11 +51,11 @@ import '../css/main.scss';
 
   socket.on('addCurrency', (newCurrencyPair) => {
     const dataSet = dataService.createCurrencyPairDataset(newCurrencyPair);
-    dataService.addChartData(null, [dataSet]);
+    dataService.addChartData(newCurrencyPair, [dataSet]);
   });
 
   socket.on('deleteCurrency', (currencyPairToDelete) => {
-    // this.dataService.deleteCurrencyPair(currencyPairToDelete);
+    dataService.removeChartData(currencyPairToDelete);
   });
 
   socket.on('updateDateRange', (updatedChartData) => {
