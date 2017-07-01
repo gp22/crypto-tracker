@@ -1,5 +1,6 @@
 const Chart = require('chart.js');
 const moment = require('moment');
+const apiService = require('./apiService');
 
 const ctx = document.getElementById('cryptoChart');
 const options = {
@@ -54,29 +55,15 @@ function clearChart() {
 }
 
 function addCurrencyPair(currencyPair) {
-  const body = JSON.stringify(currencyPair);
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  };
-  const options = {
-    method: 'POST',
-    headers,
-    body,
-  };
-
-  fetch('/api/currency', options)
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(`Error: ${response.status}`);
-    })
-    .then((responseData) => {
-      const dataSet = createCurrencyPairDataset(responseData);
-      addChartData(responseData, [dataSet]);
-    })
-    .catch(e => e.message);
+  return new Promise((resolve) => {
+    apiService.getNewCurrencyFromAPI(currencyPair)
+      .then((responseData) => {
+        const dataSet = createCurrencyPairDataset(responseData);
+        addChartData(responseData, [dataSet]);
+        resolve();
+      })
+      .catch(e => e.message);
+  });
 }
 
 module.exports = {

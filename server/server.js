@@ -50,9 +50,12 @@ io.on('connection', (socket) => {
     });
 
   socket.on('addCurrency', (receivedCurrencyPair) => {
-    const { currencyPair } = receivedCurrencyPair;
+    const { currency1, currency2 } = receivedCurrencyPair;
+    const currencyPair = {
+      currencyPair: `${currency1}_${currency2}`,
+    };
 
-    CurrencyPair.findOne({ currencyPair })
+    CurrencyPair.findOne(currencyPair)
       .then((foundCurrencyPair) => {
         socket.broadcast.emit('addCurrency', foundCurrencyPair);
       });
