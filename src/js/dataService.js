@@ -16,6 +16,10 @@ const cryptoChart = new Chart(ctx, {
   },
 });
 
+/* ************************************************************************* */
+/* ------------------------ Local Data Manipulation ------------------------ */
+/* ************************************************************************* */
+
 function createCurrencyPairDataset(currencyPair) {
   const data = currencyPair.data.map(currencyData => currencyData.high);
   const label = currencyPair.currencyPair;
@@ -50,7 +54,7 @@ function removeChartData(currencyPair) {
     return dataset.label === currencyPairToDelete;
   }));
 
-  cryptoChart.data.datasets.splice(1, 1);
+  cryptoChart.data.datasets.splice(index, 1);
   cryptoChart.update();
 }
 
@@ -59,6 +63,29 @@ function clearChart() {
   cryptoChart.data.datasets.length = 0;
   cryptoChart.update();
 }
+
+function createNewChart(chartData) {
+  const firstCurrencyPair = chartData.currencyPairs[0];
+  const dataSets = [];
+
+  if (chartData.currencyPairs.length === 0) {
+    return;
+  }
+
+  clearChart();
+
+  // Popluate chart data for each currencyPair and push into datasets
+  chartData.currencyPairs.forEach((currencyPair) => {
+    const dataSet = createCurrencyPairDataset(currencyPair);
+    dataSets.push(dataSet);
+  });
+
+  addChartData(firstCurrencyPair, dataSets);
+}
+
+/* ************************************************************************* */
+/* ------------------------------- API Calls ------------------------------- */
+/* ************************************************************************* */
 
 function addCurrencyPair(currencyPair) {
   return new Promise((resolve) => {
@@ -83,11 +110,28 @@ function removeCurrencyPair(currencyPair) {
   });
 }
 
+function updateDateRange(newDateRange) {
+  const timeStamp = moment().subtract(newDateRange, 'days').unix();
+  const newStartDate = {
+    newStartDate: timeStamp,
+  };
+
+  return new Promise((resolve) => {
+    apiService.updateDateRangeFromAPI(newStartDate)
+      .then((newChartData) => {
+        createNewChart(newChartData);
+        resolve();
+      })
+      .catch(e => e.message);
+  });
+}
+
 module.exports = {
   createCurrencyPairDataset,
   addChartData,
   removeChartData,
-  clearChart,
   addCurrencyPair,
   removeCurrencyPair,
+  createNewChart,
+  updateDateRange,
 };

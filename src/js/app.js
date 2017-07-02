@@ -6,47 +6,52 @@ import '../css/main.scss';
 
   const socket = io();
   const currencyButtons = document.querySelectorAll('.currency-button');
+  const dateButtons = document.querySelectorAll('.date-button');
+
+  /* ********************************************************************** */
+  /* --------------------------- Click Handlers --------------------------- */
+  /* ********************************************************************** */
 
   currencyButtons.forEach((button) => {
-    button.enabled = false;
+    // button.enabled = false;
     button.addEventListener('click', function () {
       const currency1 = 'USDT';
       const currency2 = this.id.toUpperCase();
       const currencyPair = { currency1, currency2 };
 
-      if (!this.enabled) {
+      // if (!this.enabled) {
         dataService.addCurrencyPair(currencyPair)
           .then(() => {
             socket.emit('addCurrency', currencyPair);
             this.enabled = true;
           });
-      } else {
-        dataService.removeCurrencyPair(currencyPair)
-          .then(() => {
-            socket.emit('deleteCurrency', currencyPair);
-            this.enabled = false;
-          });
-      }
+      // } else {
+      //   dataService.removeCurrencyPair(currencyPair)
+      //     .then(() => {
+      //       socket.emit('deleteCurrency', currencyPair);
+      //       this.enabled = false;
+      //     });
+      // }
     });
   });
 
-  socket.on('newChart', (chartData) => {
-    const firstCurrencyPair = chartData.currencyPairs[0];
-    const datasets = [];
+  dateButtons.forEach((button) => {
+    button.addEventListener('click', function () {
+      const newDateRange = this.id;
 
-    if (chartData.currencyPairs.length === 0) {
-      return;
-    }
-
-    dataService.clearChart();
-
-    // Popluate chart data for each currencyPair and push into datasets
-    chartData.currencyPairs.forEach((currencyPair) => {
-      const dataSet = dataService.createCurrencyPairDataset(currencyPair);
-      datasets.push(dataSet);
+      dataService.updateDateRange(newDateRange)
+        .then(() => {
+          socket.emit('newChart');
+        });
     });
+  });
 
-    dataService.addChartData(firstCurrencyPair, datasets);
+  /* ********************************************************************** */
+  /* -------------------------- socket.io events -------------------------- */
+  /* ********************************************************************** */
+
+  socket.on('newChart', (chartData) => {
+    dataService.createNewChart(chartData);
   });
 
   socket.on('addCurrency', (newCurrencyPair) => {
@@ -56,9 +61,5 @@ import '../css/main.scss';
 
   socket.on('deleteCurrency', (currencyPairToDelete) => {
     dataService.removeChartData(currencyPairToDelete);
-  });
-
-  socket.on('updateDateRange', (updatedChartData) => {
-    // this.dataService.updateChart(updatedChartData);
   });
 }());

@@ -1,9 +1,10 @@
+const headers = {
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
+};
+
 function getNewCurrencyFromAPI(currencyPair) {
   const body = JSON.stringify(currencyPair);
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  };
   const options = {
     method: 'POST',
     headers,
@@ -21,10 +22,6 @@ function getNewCurrencyFromAPI(currencyPair) {
 
 function removeCurrencyFromAPI(currencyPair) {
   const body = JSON.stringify(currencyPair);
-  const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  };
   const options = {
     method: 'DELETE',
     headers,
@@ -40,7 +37,25 @@ function removeCurrencyFromAPI(currencyPair) {
     });
 }
 
+function updateDateRangeFromAPI(newStartDate) {
+  const body = JSON.stringify(newStartDate);
+  const options = {
+    method: 'PATCH',
+    headers,
+    body,
+  };
+
+  return fetch('/api/chart', options)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`Error: ${response.status}`);
+    });
+}
+
 module.exports = {
   getNewCurrencyFromAPI,
   removeCurrencyFromAPI,
+  updateDateRangeFromAPI,
 };

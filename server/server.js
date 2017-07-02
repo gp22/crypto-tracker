@@ -65,11 +65,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('deleteCurrency', currencyPairToDelete);
   });
 
-  socket.on('updateDateRange', () => {
+  socket.on('newChart', () => {
     Chart.findOne({})
       .populate('currencyPairs')
       .then((foundChart) => {
-        socket.broadcast.emit('updateDateRange', foundChart);
+        socket.broadcast.emit('newChart', foundChart);
       });
   });
 });

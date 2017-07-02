@@ -13,7 +13,8 @@ router.use(bodyParser.json());
 
 // Route to update the date range of the chart
 router.patch('/api/chart', (req, res) => {
-  const { newStartDate } = req.body;
+  let { newStartDate } = req.body;
+  newStartDate = newStartDate.toString();
   const currencyUpdates = [];
 
   if (!newStartDate || !validator.isNumeric(newStartDate)) {
