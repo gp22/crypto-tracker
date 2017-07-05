@@ -1,22 +1,23 @@
 body {
-  font-family: 'Roboto', sans-serif;
-  color: $main;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
+  font-family: $defaultFont, monospace;
+  font-size: 16px;
+  color: $mainFontColor;
+  background-color: $bodyBackgroundColor;
+  min-height: 100vh;
+  height: 500px;
 }
 
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-a {
-  color: $main;
-  text-decoration: none;
+// a {
+//   color: $main;
+//   text-decoration: none;
 
-  &:hover {
-    color: $secondary;
-  }
-}
+//   &:hover {
+//     color: $secondary;
+//   }
+// }

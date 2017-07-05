@@ -1,15 +1,23 @@
 .btn {
-  background-color: $main;
-  color: #fff;
+  background-color: $buttonBackgroundColor;
+  font-family: $defaultFont, monospace;
+  font-size: .75rem;
+  color: $mainFontColor;
   text-decoration: none;
-  padding: .75rem 1.2rem;
+  margin: .5rem;
+  padding: .4rem 1.2rem;
   display: inline-block;
+  border: 0;
+}
 
-  &--orange {
-    background-color: $secondary;
-  }
+.btn:hover {
+  background-color: $butttonHoverColor;
+}
 
-  &--large {
-    padding: 1.1rem 1.9rem;
-  }
+.btn--enabled {
+  border-left: .4rem solid $buttonEnabledColor;
+}
+
+.btn--disabled {
+  border-left: .4rem solid $buttonDisabledColor;
 }
