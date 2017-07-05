@@ -2,11 +2,26 @@ const Chart = require('chart.js');
 const moment = require('moment');
 const apiService = require('./apiService');
 
+const mainFontColor = '#e6e6e6';
 const ctx = document.getElementById('cryptoChart');
 const options = {
   responsive: true,
   maintainAspectRatio: false,
+  scales: {
+    xAxes: [{
+      gridLines: {
+        color: mainFontColor,
+      },
+    }],
+    yAxes: [{
+      gridLines: {
+        color: mainFontColor,
+      },
+    }],
+  },
 };
+Chart.defaults.global.defaultFontColor = mainFontColor;
+Chart.defaults.global.defaultFontFamily = "'Hack', 'monospace'";
 const cryptoChart = new Chart(ctx, {
   type: 'line',
   options,
@@ -20,6 +35,12 @@ const cryptoChart = new Chart(ctx, {
 /* ------------------------ Local Data Manipulation ------------------------ */
 /* ************************************************************************* */
 
+function randomColor() {
+  const LOW_COLOR_VALUE = 150;
+  const HIGH_COLOR_VALUE = 256;
+  return Math.floor((Math.random() * (HIGH_COLOR_VALUE - LOW_COLOR_VALUE)) + LOW_COLOR_VALUE);
+}
+
 function createCurrencyPairDataset(currencyPair) {
   const data = currencyPair.data.map(currencyData => currencyData.high);
   const label = currencyPair.currencyPair;
@@ -28,6 +49,9 @@ function createCurrencyPairDataset(currencyPair) {
     data,
     borderWidth: 1,
     fill: false,
+    borderColor: [
+      `rgba(${randomColor()}, ${randomColor()}, ${randomColor()}, 1)`,
+    ],
   };
   return dataSet;
 }
@@ -64,6 +88,18 @@ function clearChart() {
   cryptoChart.update();
 }
 
+function toggleButton(id) {
+  const button = document.getElementById(id);
+
+  if (button.classList.contains('btn--disabled')) {
+    button.classList.remove('btn--disabled');
+    button.classList.add('btn--enabled');
+  } else {
+    button.classList.remove('btn--enabled');
+    button.classList.add('btn--disabled');
+  }
+}
+
 function createNewChart(chartData) {
   const firstCurrencyPair = chartData.currencyPairs[0];
   const dataSets = [];
@@ -77,6 +113,9 @@ function createNewChart(chartData) {
   // Popluate chart data for each currencyPair and push into datasets
   chartData.currencyPairs.forEach((currencyPair) => {
     const dataSet = createCurrencyPairDataset(currencyPair);
+    const id = String(dataSet.label.split('_')[1]).toLowerCase();
+
+    toggleButton(id);
     dataSets.push(dataSet);
   });
 
@@ -134,4 +173,5 @@ module.exports = {
   removeCurrencyPair,
   createNewChart,
   updateDateRange,
+  toggleButton,
 };

@@ -1,10 +1,9 @@
 import '../css/main.scss';
 
-(function ChartManager() {
-  const io = require('socket.io-client');
-  const dataService = require('./dataService');
+const socket = require('socket.io-client')();
+const dataService = require('./dataService');
 
-  const socket = io();
+(function ChartManager() {
   const currencyButtons = document.querySelectorAll('.currency-button');
   const dateButtons = document.querySelectorAll('.date-button');
 
@@ -19,19 +18,31 @@ import '../css/main.scss';
       const currency2 = this.id.toUpperCase();
       const currencyPair = { currency1, currency2 };
 
-      // if (!this.enabled) {
+      if (this.classList.contains('btn--disabled')) {
+        this.enabled = false;
         dataService.addCurrencyPair(currencyPair)
           .then(() => {
             socket.emit('addCurrency', currencyPair);
+            dataService.toggleButton(this.id);
+            this.enabled = true;
+          })
+          .catch((e) => {
+            console.error(e);
             this.enabled = true;
           });
-      // } else {
-      //   dataService.removeCurrencyPair(currencyPair)
-      //     .then(() => {
-      //       socket.emit('deleteCurrency', currencyPair);
-      //       this.enabled = false;
-      //     });
-      // }
+      } else {
+        this.enabled = false;
+        dataService.removeCurrencyPair(currencyPair)
+          .then(() => {
+            socket.emit('deleteCurrency', currencyPair);
+            dataService.toggleButton(this.id);
+            this.enabled = true;
+          })
+          .catch((e) => {
+            console.error(e);
+            this.enabled = true;
+          });
+      }
     });
   });
 
