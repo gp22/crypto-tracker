@@ -50,9 +50,14 @@ const dataService = require('./dataService');
     button.addEventListener('click', function () {
       const newDateRange = this.id;
 
+      this.enabled = false;
       dataService.updateDateRange(newDateRange)
         .then(() => {
           socket.emit('newChart');
+          dateButtons.forEach((button) => {
+            handlers.disableButton(button.id);
+          });
+          handlers.enableButton(this.id);
         });
     });
   });
@@ -62,7 +67,16 @@ const dataService = require('./dataService');
   /* ********************************************************************** */
 
   socket.on('newChart', (chartData) => {
+    const duration = dataService.getDuration(chartData.startDate);
+
     dataService.createNewChart(chartData);
+    dateButtons.forEach((button) => {
+      if (button.id === duration) {
+        handlers.enableButton(button.id);
+      } else {
+        handlers.disableButton(button.id);
+      }
+    });
   });
 
   socket.on('addCurrency', (newCurrencyPair) => {

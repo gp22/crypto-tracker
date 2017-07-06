@@ -33,7 +33,7 @@ const cryptoChart = new Chart(ctx, {
 });
 
 /* ************************************************************************* */
-/* ------------------------ Local Data Manipulation ------------------------ */
+/* ---------------------------- Helper Functions --------------------------- */
 /* ************************************************************************* */
 
 function randomColor() {
@@ -56,6 +56,17 @@ function createCurrencyPairDataset(currencyPair) {
   };
   return dataSet;
 }
+
+function getDuration(startDate) {
+  const today = new moment().unix();
+  const start = moment.unix(startDate).unix();
+
+  return String((Math.floor(moment.duration(today - start, 's').asDays())));
+}
+
+/* ************************************************************************* */
+/* ------------------------ Local Data Manipulation ------------------------ */
+/* ************************************************************************* */
 
 function addChartData(currencyPair, dataSets) {
   // Create the date labels for the chart if they don't exist
@@ -162,4 +173,5 @@ module.exports = {
   removeCurrencyPair,
   createNewChart,
   updateDateRange,
+  getDuration,
 };

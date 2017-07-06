@@ -19,7 +19,17 @@ function enableButton(id) {
   }
 }
 
+function disableButton(id) {
+  const button = document.getElementById(id);
+
+  if (button.classList.contains('btn--enabled')) {
+    button.classList.remove('btn--enabled');
+    button.classList.add('btn--disabled');
+  }
+}
+
 module.exports = {
   toggleButton,
   enableButton,
+  disableButton,
 };
