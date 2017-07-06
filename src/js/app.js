@@ -1,6 +1,7 @@
 import '../css/main.scss';
 
 const socket = require('socket.io-client')();
+const handlers = require('./handlers');
 const dataService = require('./dataService');
 
 (function ChartManager() {
@@ -22,7 +23,7 @@ const dataService = require('./dataService');
         dataService.addCurrencyPair(currencyPair)
           .then(() => {
             socket.emit('addCurrency', currencyPair);
-            dataService.toggleButton(this.id);
+            handlers.toggleButton(this.id);
             this.enabled = true;
           })
           .catch((e) => {
@@ -34,7 +35,7 @@ const dataService = require('./dataService');
         dataService.removeCurrencyPair(currencyPair)
           .then(() => {
             socket.emit('deleteCurrency', currencyPair);
-            dataService.toggleButton(this.id);
+            handlers.toggleButton(this.id);
             this.enabled = true;
           })
           .catch((e) => {
@@ -69,13 +70,13 @@ const dataService = require('./dataService');
     const id = newCurrencyPair.currencyPair.split('_')[1].toLowerCase();
 
     dataService.addChartData(newCurrencyPair, [dataSet]);
-    dataService.toggleButton(id);
+    handlers.toggleButton(id);
   });
 
   socket.on('deleteCurrency', (currencyPairToDelete) => {
     const id = currencyPairToDelete.currency2.toLowerCase();
 
     dataService.removeChartData(currencyPairToDelete);
-    dataService.toggleButton(id);
+    handlers.toggleButton(id);
   });
 }());

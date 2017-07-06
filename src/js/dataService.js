@@ -1,5 +1,6 @@
 const Chart = require('chart.js');
 const moment = require('moment');
+const handlers = require('./handlers');
 const apiService = require('./apiService');
 
 const mainFontColor = '#e6e6e6';
@@ -88,18 +89,6 @@ function clearChart() {
   cryptoChart.update();
 }
 
-function toggleButton(id) {
-  const button = document.getElementById(id);
-
-  if (button.classList.contains('btn--disabled')) {
-    button.classList.remove('btn--disabled');
-    button.classList.add('btn--enabled');
-  } else {
-    button.classList.remove('btn--enabled');
-    button.classList.add('btn--disabled');
-  }
-}
-
 function createNewChart(chartData) {
   const firstCurrencyPair = chartData.currencyPairs[0];
   const dataSets = [];
@@ -115,7 +104,7 @@ function createNewChart(chartData) {
     const dataSet = createCurrencyPairDataset(currencyPair);
     const id = String(dataSet.label.split('_')[1]).toLowerCase();
 
-    toggleButton(id);
+    handlers.enableButton(id);
     dataSets.push(dataSet);
   });
 
@@ -173,5 +162,4 @@ module.exports = {
   removeCurrencyPair,
   createNewChart,
   updateDateRange,
-  toggleButton,
 };
