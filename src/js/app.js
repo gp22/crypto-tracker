@@ -12,7 +12,6 @@ const dataService = require('./dataService');
   /* ********************************************************************** */
 
   currencyButtons.forEach((button) => {
-    // button.enabled = false;
     button.addEventListener('click', function () {
       const currency1 = 'USDT';
       const currency2 = this.id.toUpperCase();
@@ -67,10 +66,16 @@ const dataService = require('./dataService');
 
   socket.on('addCurrency', (newCurrencyPair) => {
     const dataSet = dataService.createCurrencyPairDataset(newCurrencyPair);
+    const id = newCurrencyPair.currencyPair.split('_')[1].toLowerCase();
+
     dataService.addChartData(newCurrencyPair, [dataSet]);
+    dataService.toggleButton(id);
   });
 
   socket.on('deleteCurrency', (currencyPairToDelete) => {
+    const id = currencyPairToDelete.currency2.toLowerCase();
+
     dataService.removeChartData(currencyPairToDelete);
+    dataService.toggleButton(id);
   });
 }());
