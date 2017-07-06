@@ -4,6 +4,7 @@ const handlers = require('./handlers');
 const apiService = require('./apiService');
 
 const mainFontColor = '#e6e6e6';
+const gridColor = '#919191';
 const ctx = document.getElementById('cryptoChart');
 const options = {
   responsive: true,
@@ -11,12 +12,12 @@ const options = {
   scales: {
     xAxes: [{
       gridLines: {
-        color: mainFontColor,
+        color: gridColor,
       },
     }],
     yAxes: [{
       gridLines: {
-        color: mainFontColor,
+        color: gridColor,
       },
     }],
   },
@@ -72,7 +73,7 @@ function addChartData(currencyPair, dataSets) {
   // Create the date labels for the chart if they don't exist
   if (cryptoChart.data.labels.length === 0) {
     currencyPair.data.forEach((data) => {
-      const date = (moment.unix(data.date).format('YYYY.MM.DD'));
+      const date = (moment.unix(data.date).format('MM.DD'));
       cryptoChart.data.labels.push(date);
     });
   }
