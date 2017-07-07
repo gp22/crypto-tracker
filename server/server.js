@@ -15,6 +15,7 @@ const io = socketIO(server);
 
 // Create link to Angular build directory
 const distDir = path.join(__dirname, '../dist');
+console.log(distDir);
 app.use(express.static(distDir));
 
 // Import routes
