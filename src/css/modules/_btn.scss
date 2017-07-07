@@ -4,10 +4,14 @@
   font-size: .75rem;
   color: $mainFontColor;
   text-decoration: none;
-  margin: .5rem;
-  padding: .4rem 1.2rem;
+  margin: .2rem .4rem;
+  padding: .2rem .8rem;
   display: inline-block;
   border: 0;
+
+  @media (min-width: 530px) {
+    padding: .4rem 1.2rem;
+  }
 }
 
 .btn:hover {
@@ -15,9 +19,9 @@
 }
 
 .btn--enabled {
-  border-left: .4rem solid $buttonEnabledColor;
+  border-left: .2rem solid $buttonEnabledColor;
 }
 
 .btn--disabled {
-  border-left: .4rem solid $buttonDisabledColor;
+  border-left: .2rem solid $buttonDisabledColor;
 }
