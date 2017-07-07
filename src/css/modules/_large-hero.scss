@@ -1,11 +1,31 @@
+.large-hero {
+  text-align: center;
+  margin: 0 0 1rem 0;
+
+  @media (min-width: 530px) {
+    text-align: left;
+  }
+}
+
 .large-hero__title {
   margin: 0;
-  font-size: 2rem;
+  letter-spacing: 1px;
   font-weight: lighter;
+  font-size: 1.2rem;
+  letter-spacing: .32rem;
+
+  @media (min-width: 530px) {
+    letter-spacing: .65rem;
+    font-size: 2rem;
+  }
 }
 
 .large-hero__subtitle {
   margin: 0;
-  font-size: 1.2rem;
   font-weight: lighter;
+  font-size: 1rem;
+
+  @media (min-width: 530px) {
+    font-size: 1.2rem;
+  }
 }

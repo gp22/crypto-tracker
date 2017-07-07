@@ -13,11 +13,11 @@ body {
   box-sizing: border-box;
 }
 
-// a {
-//   color: $main;
-//   text-decoration: none;
+a {
+  color: $linkColor;
+  text-decoration: none;
 
-//   &:hover {
-//     color: $secondary;
-//   }
-// }
+  &:hover {
+    color: $linkHoverColor;
+  }
+}
