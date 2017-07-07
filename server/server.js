@@ -14,7 +14,7 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 // Create link to Angular build directory
-const distDir = path.join(__dirname, '/dist');
+const distDir = path.join(__dirname, '../../dist');
 console.log(__dirname);
 console.log(distDir);
 app.use(express.static(distDir));
